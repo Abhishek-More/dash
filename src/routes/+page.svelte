@@ -1,2 +1,29 @@
-<h1 class="text-center">Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script>
+
+    import { onMount } from 'svelte';
+
+    let stream;
+    let videoRef;
+
+    onMount(async () => {
+          try {
+              stream = await navigator.mediaDevices.getUserMedia({
+                  video: true,
+                  audio: false
+              });
+              videoRef.srcObject = stream;
+          } catch (err) {
+              console.error(err);
+          }
+    });
+
+  
+</script>
+<section class="container mx-auto px-4">
+    <h1 class="text-4xl text-blue-500 my-4">Webcam Stream Mastery</h1>
+    <button class="rounded-sm bg-slate-600 text-white px-4 py-2">Start Stream</button>
+    <button class="rounded-sm bg-red-600 text-white px-4 py-2">Stop Stream</button>
+
+    <video class="mt-4 rounded-sm " width="640" height="480" autoplay={true} bind:this={videoRef} />
+
+</section>
