@@ -6,15 +6,25 @@
     let videoRef;
 
     onMount(async () => {
-          try {
-              stream = await navigator.mediaDevices.getUserMedia({
-                  video: true,
-                  audio: false
-              });
-              videoRef.srcObject = stream;
-          } catch (err) {
-              console.error(err);
-          }
+      let video = document.getElementById('vid');
+      video.style.width = document.width + 'px';
+      video.style.height = document.height + 'px';
+      video.setAttribute('autoplay', '');
+      video.setAttribute('muted', '');
+      video.setAttribute('playsinline', '');
+      stream = await navigator.mediaDevices.getUserMedia({
+          video: { facingMode: "user"},
+          audio: false
+      });
+      videoRef.srcObject = stream;
+
+      video.addEventListener('click', function() {
+        if (facingMode == "user") {
+          facingMode = "environment";
+        } else {
+          facingMode = "user";
+        }
+      });
     });
 
   
@@ -24,6 +34,6 @@
     <button class="rounded-sm bg-slate-600 text-white px-4 py-2">Start Stream</button>
     <button class="rounded-sm bg-red-600 text-white px-4 py-2">Stop Stream</button>
 
-    <video class="mt-4 rounded-sm " width="640" height="480" autoplay={true} bind:this={videoRef} />
+    <video id="vid" class="mt-4 rounded-sm " width="640" height="480" autoplay={true} muted playsinline bind:this={videoRef} />
 
 </section>
