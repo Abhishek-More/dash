@@ -1,2 +1,77 @@
-<h1 class="text-center">Welcome to SvelteKit</h1>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { onMount } from 'svelte';
+	import cv from '@techstark/opencv-js';
+
+	let stream;
+	let videoRef;
+	let src;
+	let cap;
+
+	onMount(async () => {
+		let video: HTMLVideoElement = document.getElementById('vid');
+		video.style.width = 640 + 'px';
+		video.style.height = 480 + 'px';
+		video.setAttribute('autoplay', '');
+		video.setAttribute('muted', '');
+		video.setAttribute('playsinline', '');
+		stream = await navigator.mediaDevices.getUserMedia({
+			video: { facingMode: 'environment' },
+			audio: false
+		});
+		videoRef.srcObject = stream;
+		src = new cv.Mat(480, 640, cv.CV_8UC4);
+		cap = new cv.VideoCapture(video);
+
+		function countBlackPixels(mat) {
+			let blackCount = 0;
+			for (let y = 0; y < mat.rows; y++) {
+				for (let x = 0; x < mat.cols; x++) {
+					let pixel = mat.ucharPtr(y, x);
+					// Check if pixel is black (all channels are 0)
+					if (pixel[0] === 0 && pixel[1] === 0 && pixel[2] === 0) {
+						blackCount++;
+					}
+				}
+			}
+			return blackCount;
+		}
+
+		// Function to process video stream
+		function processVideo() {
+			try {
+				cap.read(src);
+				let newMat = new cv.Mat();
+				cv.cvtColor(src, newMat, cv.COLOR_RGBA2GRAY);
+				cv.imshow('dst', newMat);
+				// Count black pixels
+				let blackPixelCount = countBlackPixels(newMat);
+				console.log('Number of black pixels:', blackPixelCount);
+
+				// Repeat process every second
+			} catch (error) {
+				console.error('Error processing video:', error);
+			}
+		}
+
+		// Start processing video
+		setInterval(processVideo, 2000);
+	});
+</script>
+
+<section class="container mx-auto px-4">
+	<h1 class="text-4xl text-blue-500 my-4">Webcam Stream Mastery</h1>
+	<button class="rounded-sm bg-slate-600 text-white px-4 py-2">Start Stream</button>
+	<button class="rounded-sm bg-red-600 text-white px-4 py-2">Stop Stream</button>
+
+	<video
+		id="vid"
+		class="mt-4 rounded-sm"
+		width="640"
+		height="480"
+		autoplay={true}
+		muted
+		playsinline
+		bind:this={videoRef}
+	/>
+	<canvas id="dst" class="mt-4 rounded-sm" width="640" height="480" />
+</section>
