@@ -1,5 +1,4 @@
 <script>
-
     import { onMount } from 'svelte';
 
     let stream;
@@ -13,18 +12,10 @@
       video.setAttribute('muted', '');
       video.setAttribute('playsinline', '');
       stream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: "user"},
+          video: { facingMode: "environment"},
           audio: false
       });
       videoRef.srcObject = stream;
-
-      video.addEventListener('click', function() {
-        if (facingMode == "user") {
-          facingMode = "environment";
-        } else {
-          facingMode = "user";
-        }
-      });
     });
 
   
