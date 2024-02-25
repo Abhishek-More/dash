@@ -11,6 +11,7 @@
 	let src;
 	let cap;
 	let dark = false;
+	let bikeMode = false;
 	let p = [];
 
 	onMount(async () => {
@@ -106,7 +107,7 @@
 </script>
 
 <section
-	class={`${dark ? 'bg-slate-800' : 'bg-white'} flex flex-col sm:flex-row gap-8 max-h-screen overflow-hidden transition-all h-screen`}
+	class={`${dark ? 'bg-slate-800' : 'bg-white'} ${bikeMode && !dark ? 'bg-teal-200' : 'bg-white'} flex flex-col sm:flex-row gap-8 max-h-screen overflow-hidden transition-all h-screen`}
 >
 	<video
 		id="vid"
@@ -119,11 +120,16 @@
 		bind:this={videoRef}
 	/>
 	<div class="flex flex-row sm:flex-col justify-around items-center py-8 w-full h-full">
-		<div class="h-20 w-20 bg-teal-500 rounded-full">
+		<button
+			on:click={() => {
+				bikeMode = !bikeMode;
+			}}
+			class="h-20 w-20 bg-teal-500 rounded-full"
+		>
 			<div class={`${dark ? 'text-slate-800' : 'text-white'} scale-50 transition-all`}>
 				<GiDutchBike />
 			</div>
-		</div>
+		</button>
 		<button
 			on:click={() => {
 				dark = !dark;
@@ -140,7 +146,7 @@
 			}}
 			class={`${dark ? 'bg-slate-400' : 'bg-slate-800'} h-20 w-20 rounded-full`}
 		>
-			<div class={`${dark ? 'text-slate-800' : 'text-white'} rotate-45 scale-50 transition-all`}>
+			<div class={`${dark ? 'text-slate-800' : 'text-white'} scale-50 transition-all`}>
 				<FaMoon />
 			</div>
 		</button>
