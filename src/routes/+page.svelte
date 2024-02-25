@@ -7,6 +7,7 @@
 	import { frameProcessor } from '$lib/scripts/lane_detection_bad';
 	import { toast } from 'svelte-sonner';
 
+	let currentLight = '';
 	let stream;
 	let videoRef;
 	let src;
@@ -76,6 +77,40 @@
 						const y2 = y1 + p[i].bbox[3];
 						const width = p[i].bbox[2];
 						const height = p[i].bbox[3];
+
+						const canvas = document.getElementById('trafficCanvas');
+						var ctx = canvas.getContext('2d');
+						ctx.drawImage(video, x1, y1, width, height, x1, y1, width, height);
+						const imageData = ctx.getImageData(0, 0, width, height);
+						const pixels = imageData.data;
+						let redCount = 0;
+						let yellowCount = 0;
+						let greenCount = 0;
+
+						for (let i = 0; i < pixels.length; i += 4) {
+							const red = pixels[i];
+							const green = pixels[i + 1];
+							const blue = pixels[i + 2];
+							if (red > 200 && green < 100 && blue < 100) {
+								// Red color
+								redCount++;
+							} else if (green > 200 && red < 100 && blue < 100) {
+								// Green color
+								greenCount++;
+							} else if (red > 200 && green > 200 && blue < 200) {
+								// Yellow color
+								yellowCount++;
+							}
+						}
+
+						if (redCount >= yellowCount && redCount >= greenCount) {
+							currentLight = 'red';
+						} else if (greenCount >= yellowCount && greenCount >= redCount) {
+							currentLight = 'green';
+						} else {
+							currentLight = 'yellow';
+						}
+						console.log(currentLight);
 					} else if (p[i].class === 'stop sign') {
 						console.log('STOP SIGN DETECTED');
 						if (!stopSign) {
@@ -84,6 +119,9 @@
 								stopSign = false;
 							}, 2500);
 						}
+					} else {
+						stopSign = false;
+						currentLight = '';
 					}
 				}
 			} catch (error) {
@@ -97,7 +135,7 @@
 </script>
 
 <section
-	class={`${stopSign ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen  transition-all h-screen`}
+	class={`${stopSign || currentLight == 'red' ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen transition-all h-screen`}
 >
 	{#if dark}
 		<canvas id="canvas" class="rounded-sm" width="640" height="480" />
@@ -149,6 +187,8 @@
 			</div>
 		</button>
 	</div>
+
+	<canvas id="trafficCanvas" class="rounded-sm opacity-0 absolute" width="640" height="480" />
 </section>
 
 <style>

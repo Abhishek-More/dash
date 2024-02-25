@@ -1,6 +1,6 @@
 <script>
 	let p = [];
-  let currentLight = ''
+	let currentLight = '';
 	function detect() {
 		const img = document.getElementById('img');
 		console.log('detecting');
@@ -34,45 +34,42 @@
 
 				ctx.drawImage(img, x1, y1, width, height, x1, y1, width, height);
 				document.body.appendChild(canvas);
-        
-        const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-        const pixels = imageData.data;
-        let redCount = 0;
-        let yellowCount = 0;
-        let greenCount = 0;
 
-        for (let i = 0; i < pixels.length; i += 4) {
-          const red = pixels[i];
-          const green = pixels[i + 1];
-          const blue = pixels[i + 2];
-          if (red > 200 && green < 200) {
-            // Red color
-            redCount++;
-          } else if (green > 200 && red < 200) {
-            // Green color
-            greenCount++;
-          
-          } else if (red > 100 && green > 100 && blue < 200) {
-            // Yellow color
-            yellowCount++;
-            }
-          }
+				const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+				const pixels = imageData.data;
+				let redCount = 0;
+				let yellowCount = 0;
+				let greenCount = 0;
 
-        // Log the results
-        // console.log('Red Count:', redCount);
-        // console.log('Yellow Count:', yellowCount);
-        // console.log('Green Count:', greenCount);
+				for (let i = 0; i < pixels.length; i += 4) {
+					const red = pixels[i];
+					const green = pixels[i + 1];
+					const blue = pixels[i + 2];
+					if (red > 200 && green < 200) {
+						// Red color
+						redCount++;
+					} else if (green > 200 && red < 200) {
+						// Green color
+						greenCount++;
+					} else if (red > 100 && green > 100 && blue < 200) {
+						// Yellow color
+						yellowCount++;
+					}
+				}
 
-        if (redCount >= yellowCount && redCount >= greenCount) {
-          currentLight = 'red';
-        }
-        else if (greenCount >= yellowCount && greenCount >= redCount) {
-          currentLight = 'green';
-        }
-        else {
-          currentLight = 'yellow';
-        }
-        console.log(currentLight);
+				// Log the results
+				// console.log('Red Count:', redCount);
+				// console.log('Yellow Count:', yellowCount);
+				// console.log('Green Count:', greenCount);
+
+				if (redCount >= yellowCount && redCount >= greenCount) {
+					currentLight = 'red';
+				} else if (greenCount >= yellowCount && greenCount >= redCount) {
+					currentLight = 'green';
+				} else {
+					currentLight = 'yellow';
+				}
+				console.log(currentLight);
 			}
 			// if (p[i].class === 'car' || p[i].class === 'truck') {
 			// 	const x1 = p[i].bbox[0];
