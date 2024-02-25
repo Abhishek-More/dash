@@ -54,7 +54,15 @@
 					return;
 				}
 				cap.read(src);
-				const dstCanv = document.getElementById('dst');
+
+				if (dark) {
+					let dst = new cv.Mat();
+					cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+					cv.GaussianBlur(dst, dst, new cv.Size(5, 5), 0);
+
+					cv.Canny(dst, dst, 50, 150, 3);
+					cv.imshow('canvas', dst);
+				}
 
 				coco.detect(video).then((predictions) => {
 					p = predictions;
@@ -68,24 +76,8 @@
 						const y2 = y1 + p[i].bbox[3];
 						const width = p[i].bbox[2];
 						const height = p[i].bbox[3];
-
-						const canvas = document.getElementById('dst');
-						var ctx = canvas.getContext('2d');
-
-						canvas.width = dstCanv?.clientWidth;
-						canvas.height = dstCanv?.clientHeight;
-						canvas.style.borderWidth = '5px';
-						canvas.style.borderColor = 'black';
-
-						ctx.drawImage(video, x1, y1, width, height, x1, y1, width, height);
 					} else if (p[i].class === 'stop sign') {
 						console.log('STOP SIGN DETECTED');
-						const x1 = p[i].bbox[0];
-						const y1 = p[i].bbox[1];
-						const x2 = x1 + p[i].bbox[2];
-						const y2 = y1 + p[i].bbox[3];
-						const width = p[i].bbox[2];
-						const height = p[i].bbox[3];
 						if (!stopSign) {
 							stopSign = true;
 							setTimeout(() => {
@@ -105,11 +97,14 @@
 </script>
 
 <section
-	class={`${stopSign ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen overflow-hidden transition-all h-screen`}
+	class={`${stopSign ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen  transition-all h-screen`}
 >
+	{#if dark}
+		<canvas id="canvas" class="rounded-sm" width="640" height="480" />
+	{/if}
 	<video
 		id="vid"
-		class="rounded-sm"
+		class={`rounded-sm ${dark ? 'absolute z-50 opacity-0' : 'block'}`}
 		width="640"
 		height="480"
 		autoplay={true}
