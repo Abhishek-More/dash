@@ -35,8 +35,10 @@
 	"type": "module",
 	"dependencies": {
 		"@techstark/opencv-js": "^4.9.0-release.2",
+		"@types/howler": "^2.2.11",
 		"bits-ui": "^0.18.2",
 		"clsx": "^2.1.0",
+		"howler": "^2.2.4",
 		"lucide-svelte": "^0.338.0",
 		"mode-watcher": "^0.2.1",
 		"svelte-icons": "^2.1.0",
