@@ -249,13 +249,14 @@
 							width > trafficCanvas?.clientWidth / 3 ||
 							height > trafficCanvas?.clientHeight / 3
 						) {
-							closeCar = true;
-							console.log('CLOSE CAR DETECTED');
+							if (!closeCar) {
+								closeCar = true;
+								console.log('CLOSE CAR DETECTED');
+								setTimeout(() => {
+									closeCar = false;
+								}, 2500);
+							}
 						}
-
-						setTimeout(() => {
-							stopSign = false;
-						}, 2500);
 					} else {
 						stopSign = false;
 						closeCar = false;
