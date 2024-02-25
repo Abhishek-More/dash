@@ -6,6 +6,7 @@
 	import FaMoon from 'svelte-icons/fa/FaMoon.svelte';
 	import { frameProcessor } from '$lib/scripts/lane_detection_bad';
 	import { toast } from 'svelte-sonner';
+    import { initializeAccelerometer } from '$lib/scripts/accelerometer.ts';
 
 	let currentLight = '';
 	let stream;
@@ -17,8 +18,33 @@
 	let dark = false;
 	let bikeMode = false;
 	let p = [];
+    let crashDetected = false;
+	let accelerometerInitialized = false;
+
+	async function handleMotion(event: DeviceMotionEvent) {
+        if (Math.abs(event.acceleration.x) > 170 || Math.abs(event.acceleration.y) > 170 || Math.abs(event.acceleration.z) > 170) {
+            if (crashDetected === false) {
+                console.log("CRASH DETECTED");
+                alert("CRASH DETECTED");
+                // console.log("Sending SMS to " + phoneNumber);
+                await fetch('/api/crash-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: "A user",
+                        phoneNumber: "",
+                        location: "College Station, TX"
+                    })
+                });
+            }
+            crashDetected = true;
+        }
+    }
 
 	onMount(async () => {
+
 		let video: HTMLVideoElement = document.getElementById('vid');
 		video.style.width = 640 + 'px';
 		video.style.height = 480 + 'px';
@@ -48,6 +74,7 @@
 			}
 			return blackCount;
 		}
+
 
 		// Function to process video stream
 		function processVideo() {
@@ -223,6 +250,11 @@
 	});
 </script>
 
+{#if !accelerometerInitialized}
+	<button on:click={() => {initializeAccelerometer(handleMotion); accelerometerInitialized = true}}>Initialize Accelerometer</button>
+{/if}
+
+
 <section
 	class={`${stopSign || currentLight == 'red' || laneDeparture ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen transition-all h-screen`}
 >
@@ -279,6 +311,7 @@
 
 	<canvas id="trafficCanvas" class="rounded-sm opacity-0 absolute" width="640" height="480" />
 </section>
+
 
 <style>
 	.flashy {
