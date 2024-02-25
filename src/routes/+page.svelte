@@ -24,7 +24,8 @@
         if (Math.abs(event.acceleration.x) > 170 || Math.abs(event.acceleration.y) > 170 || Math.abs(event.acceleration.z) > 170) {
             if (crashDetected === false) {
                 console.log("CRASH DETECTED");
-                console.log("Sending SMS to " + phoneNumber);
+                alert("CRASH DETECTED");
+                // console.log("Sending SMS to " + phoneNumber);
                 await fetch('/api/crash-message', {
                     method: 'POST',
                     headers: {
