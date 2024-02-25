@@ -4,6 +4,7 @@
 	import GiDutchBike from 'svelte-icons/gi/GiDutchBike.svelte';
 	import TiPlus from 'svelte-icons/ti/TiPlus.svelte';
 	import FaMoon from 'svelte-icons/fa/FaMoon.svelte';
+	import { frameProcessor } from '$lib/scripts/lane_detection_bad';
 
 	let stream;
 	let videoRef;
