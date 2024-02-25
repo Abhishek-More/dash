@@ -25,9 +25,9 @@
 
 	async function handleMotion(event: DeviceMotionEvent) {
 		if (
-			Math.abs(event.acceleration.x) > 170 ||
-			Math.abs(event.acceleration.y) > 170 ||
-			Math.abs(event.acceleration.z) > 170
+			Math.abs(event.acceleration.x) > 130 ||
+			Math.abs(event.acceleration.y) > 130 ||
+			Math.abs(event.acceleration.z) > 130
 		) {
 			if (crashDetected === false) {
 				console.log('CRASH DETECTED');
