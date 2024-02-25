@@ -31,9 +31,12 @@
 		) {
 			if (crashDetected === false) {
 				console.log('CRASH DETECTED');
-				alert('CRASH DETECTED');
-				// console.log("Sending SMS to " + phoneNumber);
 				crash.play();
+				setTimeout(() => {
+					alert('CRASH DETECTED');
+				}, 3000);
+				// alert('CRASH DETECTED');
+				// console.log("Sending SMS to " + phoneNumber);
 				await fetch('/api/crash-message', {
 					method: 'POST',
 					headers: {
@@ -295,6 +298,12 @@
 		}}>Initialize Accelerometer</button
 	>
 {/if}
+
+<!-- <button on:click={() => {
+	console.log('CRASH DETECTED');
+				crash.play();
+	// alert('CRASH DETECTED');
+}}>test</button> -->
 
 <section
 	class={`${stopSign || currentLight == 'red' || laneDeparture || closeCar ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen transition-all h-screen`}
