@@ -23,6 +23,8 @@
 		src = new cv.Mat(480, 640, cv.CV_8UC4);
 		cap = new cv.VideoCapture(video);
 
+		let coco = await cocoSsd.load();
+
 		function countBlackPixels(mat) {
 			let blackCount = 0;
 			for (let y = 0; y < mat.rows; y++) {
@@ -40,14 +42,14 @@
 		// Function to process video stream
 		function processVideo() {
 			try {
+				if (!cocoSsd) {
+					return;
+				}
 				cap.read(src);
 				const dstCanv = document.getElementById('dst');
 
-				console.log('detecting');
-				cocoSsd.load().then((model) => {
-					model.detect(video).then((predictions) => {
-						p = predictions;
-					});
+				coco.detect(video).then((predictions) => {
+					p = predictions;
 				});
 
 				console.log(p);
@@ -78,7 +80,7 @@
 		}
 
 		// Start processing video
-		setInterval(processVideo, 500);
+		setInterval(processVideo, 100);
 	});
 </script>
 
