@@ -6,6 +6,7 @@
 	let videoRef;
 	let src;
 	let cap;
+	let p = [];
 
 	onMount(async () => {
 		let video: HTMLVideoElement = document.getElementById('vid');
@@ -41,13 +42,19 @@
 			try {
 				cap.read(src);
 				let newMat = new cv.Mat();
-				cv.cvtColor(src, newMat, cv.COLOR_RGBA2GRAY);
+				cv.cvtColor(src, newMat, cv.COLOR_RGB2RGBA);
 				cv.imshow('dst', newMat);
-				// Count black pixels
-				let blackPixelCount = countBlackPixels(newMat);
-				console.log('Number of black pixels:', blackPixelCount);
 
-				// Repeat process every second
+				const canv = document.getElementById('dst');
+
+				console.log('detecting');
+				cocoSsd.load().then((model) => {
+					model.detect(canv).then((predictions) => {
+						p = predictions;
+					});
+				});
+
+				console.log(p);
 			} catch (error) {
 				console.error('Error processing video:', error);
 			}
