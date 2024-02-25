@@ -41,15 +41,11 @@
 		function processVideo() {
 			try {
 				cap.read(src);
-				let newMat = new cv.Mat();
-				cv.cvtColor(src, newMat, cv.COLOR_RGB2RGBA);
-				cv.imshow('dst', newMat);
-
 				const dstCanv = document.getElementById('dst');
 
 				console.log('detecting');
 				cocoSsd.load().then((model) => {
-					model.detect(dstCanv).then((predictions) => {
+					model.detect(video).then((predictions) => {
 						p = predictions;
 					});
 				});
@@ -65,7 +61,7 @@
 						const width = p[i].bbox[2];
 						const height = p[i].bbox[3];
 
-						const canvas = document.createElement('canvas');
+						const canvas = document.getElementById('dst');
 						var ctx = canvas.getContext('2d');
 
 						canvas.width = dstCanv?.clientWidth;
@@ -73,28 +69,7 @@
 						canvas.style.borderWidth = '5px';
 						canvas.style.borderColor = 'black';
 
-						ctx.drawImage(dstCanv, x1, y1, width, height, x1, y1, width, height);
-						document.body.appendChild(canvas);
-					}
-					if (p[i].class === 'car' || p[i].class === 'truck') {
-						const x1 = p[i].bbox[0];
-						const y1 = p[i].bbox[1];
-						const width = p[i].bbox[2];
-						const height = p[i].bbox[3];
-
-						const canvas = document.createElement('canvas');
-						var ctx = canvas.getContext('2d');
-
-						if (width > dstCanv?.clientWidth / 4 || height > dstCanv?.clientHeight / 4) {
-							console.log('close!');
-						}
-						canvas.width = dstCanv?.clientWidth;
-						canvas.height = dstCanv?.clientHeight;
-						canvas.style.borderWidth = '5px';
-						canvas.style.borderColor = 'black';
-
-						ctx.drawImage(dstCanv, x1, y1, width, height, x1, y1, width, height);
-						document.body.appendChild(canvas);
+						ctx.drawImage(video, x1, y1, width, height, x1, y1, width, height);
 					}
 				}
 			} catch (error) {
@@ -103,15 +78,11 @@
 		}
 
 		// Start processing video
-		setInterval(processVideo, 2000);
+		setInterval(processVideo, 500);
 	});
 </script>
 
 <section class="container mx-auto px-4">
-	<h1 class="text-4xl text-blue-500 my-4">Webcam Stream Mastery</h1>
-	<button class="rounded-sm bg-slate-600 text-white px-4 py-2">Start Stream</button>
-	<button class="rounded-sm bg-red-600 text-white px-4 py-2">Stop Stream</button>
-
 	<video
 		id="vid"
 		class="mt-4 rounded-sm"
