@@ -27,6 +27,7 @@
             crashDetected = true;
         }
     }
+    
 
     async function testMessage()
     {
