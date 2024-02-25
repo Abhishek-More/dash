@@ -313,16 +313,11 @@
 				<GiDutchBike />
 			</div>
 		</button>
-		<button
-			on:click={() => {
-				dark = !dark;
-			}}
-			class="h-20 w-20 bg-red-500 rounded-full"
-		>
+		<a href="/landing" class="h-20 w-20 bg-red-500 rounded-full">
 			<div class={`${dark ? 'text-slate-800' : 'text-white'} rotate-45 scale-50 transition-all`}>
 				<TiPlus />
 			</div>
-		</button>
+		</a>
 		<button
 			on:click={() => {
 				dark = !dark;
