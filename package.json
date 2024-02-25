@@ -42,6 +42,7 @@
 		"svelte-icons": "^2.1.0",
 		"svelte-sonner": "^0.3.18",
 		"tailwind-merge": "^2.2.1",
-		"tailwind-variants": "^0.2.0"
+		"tailwind-variants": "^0.2.0",
+		"twilio": "^4.22.0"
 	}
 }
