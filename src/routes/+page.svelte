@@ -18,6 +18,7 @@
 	let bikeMode = false;
 	let p = [];
     let crashDetected = false;
+	let accelerometerInitialized = false;
 
 	async function handleMotion(event: DeviceMotionEvent) {
         if (Math.abs(event.acceleration.x) > 170 || Math.abs(event.acceleration.y) > 170 || Math.abs(event.acceleration.z) > 170) {
@@ -40,12 +41,6 @@
         }
     }
 
-	onMount(async () => {
-		setTimeout(() => {
-			initializeAccelerometer(handleMotion);
-		}, 1000)
-	});
-	
 	onMount(async () => {
 
 		let video: HTMLVideoElement = document.getElementById('vid');
@@ -165,6 +160,11 @@
 	});
 </script>
 
+{#if !accelerometerInitialized}
+	<button on:click={() => {initializeAccelerometer(handleMotion); accelerometerInitialized = true}}>Initialize Accelerometer</button>
+{/if}
+
+
 <section
 	class={`${stopSign || currentLight == 'red' ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen transition-all h-screen`}
 >
@@ -221,6 +221,7 @@
 
 	<canvas id="trafficCanvas" class="rounded-sm opacity-0 absolute" width="640" height="480" />
 </section>
+
 
 <style>
 	.flashy {
