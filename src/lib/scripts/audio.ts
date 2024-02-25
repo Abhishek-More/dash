@@ -1,6 +1,6 @@
 import {Howl} from 'howler';
 
-export const alert = new Howl({
+export const alertSound = new Howl({
     src: ['/audio/alert.mp3']
 });
 

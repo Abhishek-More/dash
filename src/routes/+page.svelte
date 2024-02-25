@@ -7,7 +7,7 @@
 	import { frameProcessor } from '$lib/scripts/lane_detection_bad';
 	import { toast } from 'svelte-sonner';
 	import { initializeAccelerometer } from '$lib/scripts/accelerometer.ts';
-    import { alert, angry, bleep, hooray, crash } from "$lib/scripts/audio";
+    import { alertSound, angry, bleep, hooray, crash } from "$lib/scripts/audio";
 
 	let currentLight = '';
 	let stream;
