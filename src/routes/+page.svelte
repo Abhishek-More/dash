@@ -13,6 +13,7 @@
 	let src;
 	let cap;
 	let stopSign = false;
+	let laneDeparture = false;
 	let dark = false;
 	let bikeMode = false;
 	let p = [];
@@ -63,6 +64,94 @@
 
 					cv.Canny(dst, dst, 50, 150, 3);
 					cv.imshow('canvas', dst);
+				}
+
+				if (bikeMode) {
+					const canvas = document.getElementById('laneCanvas');
+					canvas.width = video?.clientWidth;
+					canvas.height = video?.clientHeight / 3;
+					var ctx = canvas.getContext('2d');
+					ctx.drawImage(
+						video,
+						0,
+						(video.height * 2) / 3,
+						video.width,
+						video.height / 3,
+						0,
+						0,
+						video?.clientWidth,
+						video?.clientHeight / 3
+					);
+					// Read the image from the canvas
+					let dst = new cv.Mat();
+					cv.cvtColor(src, dst, cv.COLOR_RGBA2GRAY);
+					cv.GaussianBlur(dst, dst, new cv.Size(5, 5), 0);
+					cv.Canny(dst, dst, 50, 150, 3);
+
+					// Find lines using HoughLines
+					let lines = new cv.Mat();
+					cv.HoughLines(dst, lines, 1, Math.PI / 180, 75, 0, 0, 0, Math.PI);
+
+					// Draw lines on the original image
+					let checked = [];
+					for (let i = 0; i < lines.rows; ++i) {
+						if (!checked.includes(i)) {
+							checked.push(i);
+							let rho = lines.data32F[i * 2];
+							let theta = lines.data32F[i * 2 + 1];
+							let a = Math.cos(theta);
+							let b = Math.sin(theta);
+							let x0 = a * rho;
+							let y0 = b * rho;
+							let pt1 = { x: Math.round(x0 + 1000 * -b), y: Math.round(y0 + 1000 * a) };
+							let pt2 = { x: Math.round(x0 - 1000 * -b), y: Math.round(y0 - 1000 * a) };
+							for (let j = i + 1; j < lines.rows; ++j) {
+								if (!checked.includes(j)) {
+									let rho2 = lines.data32F[j * 2];
+									let theta2 = lines.data32F[j * 2 + 1];
+									let a2 = Math.cos(theta2);
+									let b2 = Math.sin(theta2);
+									let x02 = a2 * rho2;
+									let y02 = b2 * rho2;
+									let pt3 = { x: Math.round(x02 + 1000 * -b2), y: Math.round(y02 + 1000 * a2) };
+									let pt4 = { x: Math.round(x02 - 1000 * -b2), y: Math.round(y02 - 1000 * a2) };
+									if (
+										Math.sqrt(
+											Math.sqrt((pt1.x - pt3.x) ** 2 + (pt1.y - pt3.y) ** 2) +
+												Math.sqrt((pt2.x - pt4.x) ** 2 + (pt2.y - pt4.y) ** 2)
+										) <
+										video?.clientWidth * 0.03
+									) {
+										checked.push(j);
+									}
+								}
+							}
+							if (Math.abs(pt1.y - pt2.y) > video?.clientHeight * 0.2) {
+								// Draw lines on the canvas
+								ctx.beginPath();
+								ctx.moveTo(pt1.x, pt1.y);
+								ctx.lineTo(pt2.x, pt2.y);
+								ctx.strokeStyle = 'red';
+								ctx.lineWidth = 2;
+								ctx.stroke();
+								if (
+									pt1.x > video.clientWidth * 0.0 &&
+									pt1.x < video.clientWidth * 1 &&
+									pt2.x > video.clientWidth * 0 &&
+									pt2.x < video.clientWidth * 1
+								) {
+									laneDeparture = true;
+									if (!laneDeparture) {
+										laneDeparture = true;
+										setTimeout(() => {
+											laneDeparture = false;
+										}, 2500);
+									}
+								}
+							}
+						}
+					}
+					cv.imshow('laneCanvas', src);
 				}
 
 				coco.detect(video).then((predictions) => {
@@ -135,14 +224,17 @@
 </script>
 
 <section
-	class={`${stopSign || currentLight == 'red' ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen transition-all h-screen`}
+	class={`${stopSign || currentLight == 'red' || laneDeparture ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen transition-all h-screen`}
 >
 	{#if dark}
 		<canvas id="canvas" class="rounded-sm" width="640" height="480" />
 	{/if}
+	{#if bikeMode}
+		<canvas id="laneCanvas" class="rounded-sm" width="640" height="480" />
+	{/if}
 	<video
 		id="vid"
-		class={`rounded-sm ${dark ? 'absolute z-50 opacity-0' : 'block'}`}
+		class={`rounded-sm ${dark || bikeMode ? 'absolute z-50 opacity-0' : 'block'}`}
 		width="640"
 		height="480"
 		autoplay={true}
@@ -154,11 +246,7 @@
 		<button
 			on:click={() => {
 				bikeMode = !bikeMode;
-				if (bikeMode) {
-					toast.success('Bike Mode Activated');
-				} else {
-					toast.success('Bike Mode Deactivated');
-				}
+				dark = false;
 			}}
 			class="h-20 w-20 bg-teal-500 rounded-full"
 		>
@@ -179,6 +267,7 @@
 		<button
 			on:click={() => {
 				dark = !dark;
+				bikeMode = false;
 			}}
 			class={`${dark ? 'bg-slate-400' : 'bg-slate-800'} h-20 w-20 rounded-full`}
 		>
