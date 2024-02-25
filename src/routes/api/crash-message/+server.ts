@@ -1,7 +1,7 @@
 import Twilio from 'twilio';
 import { error, json } from "@sveltejs/kit";
 import type { RequestHandler } from "./$types";
-import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } from '$env/static/private';
+import { TEST_PHONE_NUMBER, TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } from '$env/static/private';
 
 // POST route to send a text message
 // request body:
@@ -11,7 +11,12 @@ import { TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN, TWILIO_PHONE_NUMBER } from '$env
 // returns:
 //     nothing
 export const POST: RequestHandler = async ({ request }) => {
-    const { name, phoneNumber, location } = await request.json();
+    let { name, phoneNumber, location } = await request.json();
+
+    if (phoneNumber === "")
+    {
+        phoneNumber = TEST_PHONE_NUMBER;
+    }
 
     const twilioClient = Twilio(TWILIO_ACCOUNT_SID, TWILIO_AUTH_TOKEN);
 
