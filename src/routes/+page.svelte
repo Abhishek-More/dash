@@ -246,8 +246,8 @@
 						const trafficCanvas = document.getElementById('trafficCanvas');
 
 						if (
-							width > trafficCanvas?.clientWidth / 4 ||
-							height > trafficCanvas?.clientHeight / 4
+							width > trafficCanvas?.clientWidth / 2 ||
+							height > trafficCanvas?.clientHeight / 2
 						) {
 							closeCar = true;
 							console.log('CLOSE CAR DETECTED');
