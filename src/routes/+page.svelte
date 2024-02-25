@@ -45,16 +45,58 @@
 				cv.cvtColor(src, newMat, cv.COLOR_RGB2RGBA);
 				cv.imshow('dst', newMat);
 
-				const canv = document.getElementById('dst');
+				const dstCanv = document.getElementById('dst');
 
 				console.log('detecting');
 				cocoSsd.load().then((model) => {
-					model.detect(canv).then((predictions) => {
+					model.detect(dstCanv).then((predictions) => {
 						p = predictions;
 					});
 				});
 
 				console.log(p);
+
+				for (let i = 0; i < p.length; i++) {
+					if (p[i].class === 'traffic light') {
+						const x1 = p[i].bbox[0];
+						const y1 = p[i].bbox[1];
+						const x2 = x1 + p[i].bbox[2];
+						const y2 = y1 + p[i].bbox[3];
+						const width = p[i].bbox[2];
+						const height = p[i].bbox[3];
+
+						const canvas = document.createElement('canvas');
+						var ctx = canvas.getContext('2d');
+
+						canvas.width = dstCanv?.clientWidth;
+						canvas.height = dstCanv?.clientHeight;
+						canvas.style.borderWidth = '5px';
+						canvas.style.borderColor = 'black';
+
+						ctx.drawImage(dstCanv, x1, y1, width, height, x1, y1, width, height);
+						document.body.appendChild(canvas);
+					}
+					if (p[i].class === 'car' || p[i].class === 'truck') {
+						const x1 = p[i].bbox[0];
+						const y1 = p[i].bbox[1];
+						const width = p[i].bbox[2];
+						const height = p[i].bbox[3];
+
+						const canvas = document.createElement('canvas');
+						var ctx = canvas.getContext('2d');
+
+						if (width > dstCanv?.clientWidth / 4 || height > dstCanv?.clientHeight / 4) {
+							console.log('close!');
+						}
+						canvas.width = dstCanv?.clientWidth;
+						canvas.height = dstCanv?.clientHeight;
+						canvas.style.borderWidth = '5px';
+						canvas.style.borderColor = 'black';
+
+						ctx.drawImage(dstCanv, x1, y1, width, height, x1, y1, width, height);
+						document.body.appendChild(canvas);
+					}
+				}
 			} catch (error) {
 				console.error('Error processing video:', error);
 			}
