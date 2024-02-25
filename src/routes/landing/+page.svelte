@@ -10,6 +10,6 @@
 			<IoMdCar />
 		</span>
 	</div>
-	<p class="scroll-m-20 text-lg lg:text-xl">Drive with your phone.</p>
+	<p class="scroll-m-20 text-lg lg:text-xl">Bringing smart car safety to everyone.</p>
 	<Button href="/" variant="destructive" size="lg">Start Drive</Button>
 </main>

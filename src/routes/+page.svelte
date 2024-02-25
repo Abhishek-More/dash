@@ -14,6 +14,7 @@
 	let src;
 	let cap;
 	let stopSign = false;
+	let closeCar = false;
 	let laneDeparture = false;
 	let dark = false;
 	let bikeMode = false;
@@ -236,8 +237,28 @@
 								stopSign = false;
 							}, 2500);
 						}
+					} else if (p[i].class === 'car' || p[i].class === 'truck') {
+						const x1 = p[i].bbox[0];
+						const y1 = p[i].bbox[1];
+						const width = p[i].bbox[2];
+						const height = p[i].bbox[3];
+
+						const trafficCanvas = document.getElementById('trafficCanvas');
+
+						if (
+							width > trafficCanvas?.clientWidth / 4 ||
+							height > trafficCanvas?.clientHeight / 4
+						) {
+							closeCar = true;
+							console.log('CLOSE CAR DETECTED');
+						}
+
+						setTimeout(() => {
+							stopSign = false;
+						}, 2500);
 					} else {
 						stopSign = false;
+						closeCar = false;
 						currentLight = '';
 					}
 				}
@@ -261,7 +282,7 @@
 {/if}
 
 <section
-	class={`${stopSign || currentLight == 'red' || laneDeparture ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen transition-all h-screen`}
+	class={`${stopSign || currentLight == 'red' || laneDeparture || closeCar ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen transition-all h-screen`}
 >
 	{#if dark}
 		<canvas id="canvas" class="rounded-sm" width="640" height="480" />
