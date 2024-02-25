@@ -1,6 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import cv from '@techstark/opencv-js';
+	import { frameProcessor } from "$lib/scripts/lane_detection_bad";
 
 	let stream;
 	let videoRef;
@@ -46,6 +47,11 @@
 				cv.imshow('dst', newMat);
 
 				const dstCanv = document.getElementById('dst');
+
+				// Lane detection
+				frameProcessor(newMat);
+
+
 
 				console.log('detecting');
 				cocoSsd.load().then((model) => {
