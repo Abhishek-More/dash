@@ -5,11 +5,13 @@
 	import TiPlus from 'svelte-icons/ti/TiPlus.svelte';
 	import FaMoon from 'svelte-icons/fa/FaMoon.svelte';
 	import { frameProcessor } from '$lib/scripts/lane_detection_bad';
+	import { toast } from 'svelte-sonner';
 
 	let stream;
 	let videoRef;
 	let src;
 	let cap;
+	let stopSign = false;
 	let dark = false;
 	let bikeMode = false;
 	let p = [];
@@ -76,24 +78,20 @@
 						canvas.style.borderColor = 'black';
 
 						ctx.drawImage(video, x1, y1, width, height, x1, y1, width, height);
-					}
-					if (p[i].class === 'stop sign') {
+					} else if (p[i].class === 'stop sign') {
+						console.log('STOP SIGN DETECTED');
 						const x1 = p[i].bbox[0];
 						const y1 = p[i].bbox[1];
 						const x2 = x1 + p[i].bbox[2];
 						const y2 = y1 + p[i].bbox[3];
 						const width = p[i].bbox[2];
 						const height = p[i].bbox[3];
-
-						const canvas = document.getElementById('dst');
-						var ctx = canvas.getContext('2d');
-
-						canvas.width = dstCanv?.clientWidth;
-						canvas.height = dstCanv?.clientHeight;
-						canvas.style.borderWidth = '5px';
-						canvas.style.borderColor = 'black';
-
-						ctx.drawImage(video, x1, y1, width, height, x1, y1, width, height);
+						if (!stopSign) {
+							stopSign = true;
+							setTimeout(() => {
+								stopSign = false;
+							}, 2500);
+						}
 					}
 				}
 			} catch (error) {
@@ -107,7 +105,7 @@
 </script>
 
 <section
-	class={`${dark ? 'bg-slate-800' : 'bg-white'} ${bikeMode && !dark ? 'bg-teal-200' : 'bg-white'} flex flex-col sm:flex-row gap-8 max-h-screen overflow-hidden transition-all h-screen`}
+	class={`${stopSign ? 'flashy' : ''} flex flex-col sm:flex-row gap-8 max-h-screen overflow-hidden transition-all h-screen`}
 >
 	<video
 		id="vid"
@@ -123,6 +121,11 @@
 		<button
 			on:click={() => {
 				bikeMode = !bikeMode;
+				if (bikeMode) {
+					toast.success('Bike Mode Activated');
+				} else {
+					toast.success('Bike Mode Deactivated');
+				}
 			}}
 			class="h-20 w-20 bg-teal-500 rounded-full"
 		>
@@ -151,5 +154,23 @@
 			</div>
 		</button>
 	</div>
-	<!-- <canvas id="dst" class="mt-4 rounded-sm" width="640" height="480" /> -->
 </section>
+
+<style>
+	.flashy {
+		animation: flash 1s infinite alternate; /* Flash animation */
+		background-color: red; /* Initial background color */
+	}
+
+	@keyframes flash {
+		0% {
+			background-color: red; /* Red background color */
+		}
+		50% {
+			background-color: white; /* White background color */
+		}
+		100% {
+			background-color: red; /* Red background color */
+		}
+	}
+</style>
