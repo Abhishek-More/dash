@@ -39,9 +39,14 @@
             crashDetected = true;
         }
     }
+
+	onMount(async () => {
+		setTimeout(() => {
+			initializeAccelerometer(handleMotion);
+		}, 1000)
+	});
 	
 	onMount(async () => {
-		initializeAccelerometer(handleMotion);
 
 		let video: HTMLVideoElement = document.getElementById('vid');
 		video.style.width = 640 + 'px';
@@ -72,7 +77,7 @@
 			}
 			return blackCount;
 		}
-		
+
 
 		// Function to process video stream
 		function processVideo() {
