@@ -7,6 +7,7 @@
 	import { frameProcessor } from '$lib/scripts/lane_detection_bad';
 	import { toast } from 'svelte-sonner';
 	import { initializeAccelerometer } from '$lib/scripts/accelerometer.ts';
+    import { alert, angry, bleep, hooray, crash } from "$lib/scripts/audio";
 
 	let currentLight = '';
 	let stream;
@@ -32,6 +33,7 @@
 				console.log('CRASH DETECTED');
 				alert('CRASH DETECTED');
 				// console.log("Sending SMS to " + phoneNumber);
+				crash.play();
 				await fetch('/api/crash-message', {
 					method: 'POST',
 					headers: {
@@ -171,6 +173,10 @@
 									pt2.x < video.clientWidth * 1
 								) {
 									if (!laneDeparture) {
+										if (!angry.playing())
+										{
+											angry.play();
+										}
 										laneDeparture = true;
 										setTimeout(() => {
 											laneDeparture = false;
@@ -231,6 +237,10 @@
 						console.log(currentLight);
 					} else if (p[i].class === 'stop sign') {
 						console.log('STOP SIGN DETECTED');
+						if (!hooray.playing())
+						{
+							hooray.play();
+						}
 						if (!stopSign) {
 							stopSign = true;
 							setTimeout(() => {
@@ -250,6 +260,10 @@
 							height > trafficCanvas?.clientHeight / 3
 						) {
 							if (!closeCar) {
+								if (!bleep.playing())
+								{
+									bleep.play();
+								}
 								closeCar = true;
 								console.log('CLOSE CAR DETECTED');
 								setTimeout(() => {

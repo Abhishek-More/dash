@@ -16,3 +16,7 @@ export const hooray = new Howl({
     src: ['/audio/hooray.mp3']
 });
 
+export const crash = new Howl({
+    src: ['/audio/crash.mp3']
+});
+
