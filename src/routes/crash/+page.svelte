@@ -9,24 +9,43 @@
 
     async function handleMotion(event: DeviceMotionEvent) {
         if (Math.abs(event.acceleration.x) > 170 || Math.abs(event.acceleration.y) > 170 || Math.abs(event.acceleration.z) > 170) {
+            if (crashDetected === false) {
+                console.log("CRASH DETECTED");
+                console.log("Sending SMS to " + phoneNumber);
+                await fetch('/api/crash-message', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: name,
+                        phoneNumber: phoneNumber,
+                        location: "College Station, TX"
+                    })
+                });
+            }
             crashDetected = true;
-            
-            await fetch('/api/crash-message', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    name: name,
-                    phoneNumber: phoneNumber,
-                    location: "College Station, TX"
-                })
-            });
         }
+    }
+
+    async function testMessage()
+    {
+        await fetch('/api/crash-message', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                name: name,
+                phoneNumber: phoneNumber,
+                location: "College Station, TX"
+            })
+        });
     }
 </script>
 
 <button on:click={() => {initializeAccelerometer(handleMotion); accelerometerInitialized = true}}>START</button>
+<button on:click={() => {testMessage()}}>Test Message</button>
 
 {#if accelerometerInitialized}
     <h1 class="text-xl">Ready!</h1>
