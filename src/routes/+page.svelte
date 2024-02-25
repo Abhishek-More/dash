@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import cv from '@techstark/opencv-js';
+	import GiDutchBike from 'svelte-icons/gi/GiDutchBike.svelte';
+	import TiPlus from 'svelte-icons/ti/TiPlus.svelte';
+	import FaMoon from 'svelte-icons/fa/FaMoon.svelte';
 
 	let stream;
 	let videoRef;
 	let src;
 	let cap;
+	let dark = false;
 	let p = [];
 
 	onMount(async () => {
@@ -52,10 +56,26 @@
 					p = predictions;
 				});
 
-				console.log(p);
-
 				for (let i = 0; i < p.length; i++) {
 					if (p[i].class === 'traffic light') {
+						const x1 = p[i].bbox[0];
+						const y1 = p[i].bbox[1];
+						const x2 = x1 + p[i].bbox[2];
+						const y2 = y1 + p[i].bbox[3];
+						const width = p[i].bbox[2];
+						const height = p[i].bbox[3];
+
+						const canvas = document.getElementById('dst');
+						var ctx = canvas.getContext('2d');
+
+						canvas.width = dstCanv?.clientWidth;
+						canvas.height = dstCanv?.clientHeight;
+						canvas.style.borderWidth = '5px';
+						canvas.style.borderColor = 'black';
+
+						ctx.drawImage(video, x1, y1, width, height, x1, y1, width, height);
+					}
+					if (p[i].class === 'stop sign') {
 						const x1 = p[i].bbox[0];
 						const y1 = p[i].bbox[1];
 						const x2 = x1 + p[i].bbox[2];
@@ -84,10 +104,12 @@
 	});
 </script>
 
-<section class="container mx-auto px-4">
+<section
+	class={`${dark ? 'bg-slate-800' : 'bg-white'} flex flex-col sm:flex-row gap-8 max-h-screen overflow-hidden transition-all h-screen`}
+>
 	<video
 		id="vid"
-		class="mt-4 rounded-sm"
+		class="rounded-sm"
 		width="640"
 		height="480"
 		autoplay={true}
@@ -95,5 +117,32 @@
 		playsinline
 		bind:this={videoRef}
 	/>
-	<canvas id="dst" class="mt-4 rounded-sm" width="640" height="480" />
+	<div class="flex flex-row sm:flex-col justify-around items-center py-8 w-full h-full">
+		<div class="h-20 w-20 bg-teal-500 rounded-full">
+			<div class={`${dark ? 'text-slate-800' : 'text-white'} scale-50 transition-all`}>
+				<GiDutchBike />
+			</div>
+		</div>
+		<button
+			on:click={() => {
+				dark = !dark;
+			}}
+			class="h-20 w-20 bg-red-500 rounded-full"
+		>
+			<div class={`${dark ? 'text-slate-800' : 'text-white'} rotate-45 scale-50 transition-all`}>
+				<TiPlus />
+			</div>
+		</button>
+		<button
+			on:click={() => {
+				dark = !dark;
+			}}
+			class={`${dark ? 'bg-slate-400' : 'bg-slate-800'} h-20 w-20 rounded-full`}
+		>
+			<div class={`${dark ? 'text-slate-800' : 'text-white'} rotate-45 scale-50 transition-all`}>
+				<FaMoon />
+			</div>
+		</button>
+	</div>
+	<!-- <canvas id="dst" class="mt-4 rounded-sm" width="640" height="480" /> -->
 </section>
