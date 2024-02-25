@@ -72,6 +72,7 @@
 			}
 			return blackCount;
 		}
+		
 
 		// Function to process video stream
 		function processVideo() {
