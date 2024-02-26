@@ -30,6 +30,7 @@
 			Math.abs(event.acceleration.z) > 130
 		) {
 			if (crashDetected === false) {
+				crashDetected = true;
 				console.log('CRASH DETECTED');
 				crash.play();
 				setTimeout(() => {
@@ -37,7 +38,7 @@
 				}, 3000);
 				// alert('CRASH DETECTED');
 				// console.log("Sending SMS to " + phoneNumber);
-				await fetch('/api/crash-message', {
+				fetch('/api/crash-message', {
 					method: 'POST',
 					headers: {
 						'Content-Type': 'application/json'
@@ -49,7 +50,6 @@
 					})
 				});
 			}
-			crashDetected = true;
 		}
 	}
 
